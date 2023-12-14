@@ -1,0 +1,36 @@
+name: Scan image with trivy
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+env:
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  scan:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile
+          load: true
+          platforms: linux/amd64
+          push: false
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build.outputs.imageid }}
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
