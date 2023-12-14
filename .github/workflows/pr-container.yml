@@ -7,10 +7,7 @@ on:
       - '!master'
   pull_request:
     branches:
-      - '!master'
-  merge_group:
-    branches:
-      - '!master'
+      - 'master'
 
 env:
   REGISTRY: ghcr.io
