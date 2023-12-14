@@ -3,11 +3,14 @@ name: Create and publish container image
 
 on:
   push:
-    branches: {}
+    branches:
+      - '!master'
   pull_request:
-    branches: {}
+    branches:
+      - '!master'
   merge_group:
-    branches: {}
+    branches:
+      - '!master'
 
 env:
   REGISTRY: ghcr.io
