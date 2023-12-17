@@ -4,10 +4,14 @@ name: Create and publish container image
 on:
   push:
     branches:
-      - '!master'
-  pull_request:
-    branches:
       - 'master'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
@@ -20,10 +24,15 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup cosign
+        uses: sigstore/cosign-installer@v3
+        if: github.event_name != 'pull_request'
 
       - name: Setup qemu for multiarch builds
         uses: docker/setup-qemu-action@v3
@@ -43,6 +52,12 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=edge,branch=master
+            type=ref,event=pr
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
       - name: Build and push docker images
         id: build
@@ -57,3 +72,10 @@ jobs:
           annotations: ${{ steps.docker_meta.outputs.annotations }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Sign the images with GitHub OIDC token
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          TAGS: ${{ steps.docker_meta.outputs.tags }}
+        run: cosign sign --yes ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+        if: github.event_name != 'pull_request'
