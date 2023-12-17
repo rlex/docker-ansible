@@ -4,7 +4,7 @@ name: Create and publish container image
 on:
   push:
     branches:
-      - 'master'
+      - '*'
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
