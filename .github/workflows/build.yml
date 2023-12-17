@@ -55,6 +55,7 @@ jobs:
           tags: |
             type=edge,branch=master
             type=ref,event=pr
+            type=ref,event=branch
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
