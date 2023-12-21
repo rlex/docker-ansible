@@ -59,12 +59,11 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
-      - name: Build and load docker images (pre)
-        id: build
+      - name: Build and load docker images (x86 only)
+        id: build_single
         uses: docker/build-push-action@v5
         with:
           file: Dockerfile
-          platforms: linux/amd64, linux/arm64/v8, linux/arm/v7
           load: true
           provenance: false
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -76,7 +75,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ steps.build.outputs.imageid }}
+          image-ref: ${{ steps.build_single.outputs.imageid }}
           exit-code: 1
           ignore-unfixed: true
           vuln-type: os,library
