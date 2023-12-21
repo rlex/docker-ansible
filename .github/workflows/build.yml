@@ -83,7 +83,7 @@ jobs:
           format: 'table'
 
       - name: Build and push docker images
-        id: push
+        id: build
         uses: docker/build-push-action@v5
         with:
           file: Dockerfile
