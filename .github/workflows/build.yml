@@ -65,6 +65,7 @@ jobs:
         with:
           file: Dockerfile
           platforms: linux/amd64, linux/arm64/v8, linux/arm/v7
+          load: true
           push: true
           provenance: false
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -72,6 +73,16 @@ jobs:
           annotations: ${{ steps.docker_meta.outputs.annotations }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build.outputs.imageid }}
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+          format: 'table'
 
       - name: Sign the images with GitHub OIDC token
         env:
