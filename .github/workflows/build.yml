@@ -82,7 +82,7 @@ jobs:
           severity: CRITICAL,HIGH
           format: 'table'
 
-      - name: Push docker images
+      - name: Build and push docker images
         id: push
         uses: docker/build-push-action@v5
         with:
