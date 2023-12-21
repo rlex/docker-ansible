@@ -59,7 +59,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
 
-      - name: Build and push docker images
+      - name: Build and load docker images (pre)
         id: build
         uses: docker/build-push-action@v5
         with:
@@ -83,6 +83,20 @@ jobs:
           vuln-type: os,library
           severity: CRITICAL,HIGH
           format: 'table'
+
+      - name: Push docker images
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile
+          platforms: linux/amd64, linux/arm64/v8, linux/arm/v7
+          push: true
+          provenance: false
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          annotations: ${{ steps.docker_meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Sign the images with GitHub OIDC token
         env:
