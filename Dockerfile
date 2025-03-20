@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:jammy
+FROM docker.io/ubuntu:noble
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install ansible git --no-install-recommends -y && apt-get clean && rm -rf /var/cache/apt/lists/*
 
