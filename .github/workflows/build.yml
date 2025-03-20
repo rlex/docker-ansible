@@ -61,7 +61,7 @@ jobs:
 
       - name: Build and load docker images (x86 only)
         id: build_single
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: Dockerfile
           load: true
@@ -84,7 +84,7 @@ jobs:
 
       - name: Build and push docker images
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: Dockerfile
           platforms: linux/amd64, linux/arm64/v8, linux/arm/v7
